@@ -1,12 +1,7 @@
 import { defineConfig } from '@umijs/max';
 
 export default defineConfig({
-  antd: {
-    import: false
-  },
-  theme: {
-    'root-entry-name': 'variable'
-  },
+  antd: {},
   access: {},
   model: {},
   initialState: {},

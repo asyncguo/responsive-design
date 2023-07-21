@@ -1,4 +1,4 @@
-import ResponsiveGrid from './ResponsiveGrid'
+import ResponsiveGrid from './responsive-grid'
 
 export {
   ResponsiveGrid

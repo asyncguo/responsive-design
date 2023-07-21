@@ -19,12 +19,20 @@ export interface Device {
   alias: string;
   /** 断点设置 */
   breakpoint: number;
-  /** 24 栅格系统的占比 */
-  layoutColSpan: number;
 }
-export const DESKTOP_DEVICE: Device = { name: 'desktop', alias: 'l', breakpoint: 835, layoutColSpan: 8} as const;
-export const TABLET_DEVICE: Device = { name: 'tablet', alias: 'm', breakpoint: 415, layoutColSpan: 12 } as const;
-export const PHONE_DEVICE: Device = { name: 'phone', alias: 's', breakpoint: 0, layoutColSpan: 24 } as const;
+
+/**
+ * 响应式栅格的断点映射 antd 的 Grid 的断点规则：
+ * {
+ *    phone: 'xs',
+ *    tablet: 'sm' | 'md',
+ *    desktop: 'lg' | 'xl' | 'xxl'
+ * }
+ * @link https://4x.ant.design/components/grid-cn/#Col
+ */
+export const DESKTOP_DEVICE: Device = { name: 'desktop', alias: 'l', breakpoint: 768 } as const;
+export const TABLET_DEVICE: Device = { name: 'tablet', alias: 'm', breakpoint: 430 } as const;
+export const PHONE_DEVICE: Device = { name: 'phone', alias: 's', breakpoint: 0 } as const;
 
 /** 设备集合 */
 export const DEVICE_MAP: Record<DeviceName, Device> = {
@@ -34,10 +42,12 @@ export const DEVICE_MAP: Record<DeviceName, Device> = {
 }
 
 export interface ResponsiveContextType {
-  /** 设备上下文，默认继承自上层节点；顶层默认为 DESKTOP_DEVICE */
+  /** 设备上下文，默认为 DESKTOP_DEVICE */
   device: Device;
   /** 组件配置上下文 */
   config?: ConfigProviderType
+  // TODO: 支持自定义设备
+  deviceMap?: Record<string extends DeviceName ? string : never, Device>
 }
 
 const ResponsiveContext = React.createContext<ResponsiveContextType>({
@@ -55,7 +65,7 @@ export interface ResponsiveProviderProps extends Omit<ResponsiveContextType, 'de
 
 /**
  * @example
- *  <ResponsiveProvider >
+ *  <ResponsiveProvider device='pc' config={{ ... }}>
  *    ...
  *  </ResponsiveProvider>
  */
@@ -67,28 +77,22 @@ export function ResponsiveProvider(props: React.PropsWithChildren<ResponsiveProv
   } = props
   const [device, setDevice] = useState<DeviceName>(defaultDevice || DESKTOP_DEVICE.name);
   
-  // TODO: ResponsiveProvider 嵌套处理？
-  
   useEffect(() => {
+    if (defaultDevice) return
+
     const calculate = () => {
       const width = window.innerWidth
 
-      if (width >= DESKTOP_DEVICE.breakpoint) {
+      if (width > DESKTOP_DEVICE.breakpoint) {
         setDevice(DESKTOP_DEVICE.name)
-      } else if (width >= TABLET_DEVICE.breakpoint) {
+      } else if (width > TABLET_DEVICE.breakpoint) {
         setDevice(TABLET_DEVICE.name)
-      } else if (width >= PHONE_DEVICE.breakpoint) {
+      } else if (width > PHONE_DEVICE.breakpoint) {
         setDevice(PHONE_DEVICE.name)
       }
     }
 
     calculate()
-
-    ConfigProvider.config({
-      theme: {
-        primaryColor: 'red',
-      },
-    });
 
     const handleResize = () => {
       calculate()
@@ -99,7 +103,7 @@ export function ResponsiveProvider(props: React.PropsWithChildren<ResponsiveProv
     }
   }, []);
 
-  const ResponsiveContextValue = useMemo(() => {
+  const responsiveContextValue = useMemo(() => {
     return {
       device: DEVICE_MAP[device],
       config: {
@@ -113,8 +117,8 @@ export function ResponsiveProvider(props: React.PropsWithChildren<ResponsiveProv
   ]);
 
   return (
-    <ResponsiveContext.Provider value={ResponsiveContextValue}>
-      <ConfigProvider {...ResponsiveContextValue.config}>{children}</ConfigProvider>
+    <ResponsiveContext.Provider value={responsiveContextValue}>
+      <ConfigProvider {...responsiveContextValue.config}>{children}</ConfigProvider>
     </ResponsiveContext.Provider>
   );
 }

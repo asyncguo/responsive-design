@@ -1,22 +1,42 @@
 import { ResponsiveGrid, useDevice } from '@/responsive-design';
 import { PageContainer, ProDescriptions } from '@ant-design/pro-components';
-import { Button, Row, Col, Descriptions, Tag } from 'antd';
+import { Button, Row, Col, Descriptions, Tag, Grid } from 'antd';
 import './index.less';
 // import AppForm from './Form';
 
+
+const { useBreakpoint } = Grid;
+
 const HomePage: React.FC = () => {
-  const device = useDevice();
-  console.log('device: ', device);
+  // const device = useDevice();
+  const screens = useBreakpoint();
+  console.log('screens:' , screens);
+  
 
   return (
     <PageContainer ghost>
       <div>
-        <Button>device: </Button> <Tag>{device.name}</Tag>
+        {/* <Button>device: </Button> <Tag>{device.name}</Tag> */}
       </div>
 
       {/* <AppForm/> */}
 
-      <h3>Row</h3>
+      <Row>
+        <Col sm={16}>
+          antd col-12
+        </Col>
+        <Col>antd col-12</Col>
+      </Row>
+
+      <ResponsiveGrid>
+        <ResponsiveGrid.Col colSpan={12} span={8} xm={1} a={1} b={2}>col-12</ResponsiveGrid.Col>
+        <ResponsiveGrid.Col>col-12</ResponsiveGrid.Col>
+      </ResponsiveGrid>
+
+      {/* <ResponsiveGrid.Descriptions>
+        
+      </ResponsiveGrid.Descriptions> */}
+
       {/* <ResponsiveGrid>
         <span>1111</span>
       </ResponsiveGrid> */}
@@ -77,7 +97,7 @@ const HomePage: React.FC = () => {
         </ProDescriptions>
       </ResponsiveGrid.ProDescriptions>
 
-      {/* <ProDescriptions
+      <ProDescriptions
           title="高级定义列表2"
           tooltip="包含了从服务器请求，columns等功能"
         >
@@ -104,7 +124,7 @@ const HomePage: React.FC = () => {
           <ProDescriptions.Item label="百分比" valueType="percent">
             100
           </ProDescriptions.Item>
-        </ProDescriptions> */}
+        </ProDescriptions>
 
 
       {/* <ResponsiveGrid.Grid>
@@ -115,7 +135,8 @@ const HomePage: React.FC = () => {
       </ResponsiveGrid.Grid> */}
 
       <ResponsiveGrid.Descriptions>
-        <Descriptions title="Descriptions User Info" contentStyle={{color: 'red'}}>
+        <Descriptions
+          title="Descriptions User Info" contentStyle={{color: 'red'}}>
           <Descriptions.Item label="UserName">Zhou Maomao</Descriptions.Item>
           <Descriptions.Item label="Telephone">1810000000</Descriptions.Item>
           <Descriptions.Item label="Live">Hangzhou, Zhejiang</Descriptions.Item>
@@ -126,7 +147,7 @@ const HomePage: React.FC = () => {
         </Descriptions>
       </ResponsiveGrid.Descriptions>
 
-      <Descriptions title="User Info">
+      <Descriptions column={1} title="User Info">
         <Descriptions.Item label="UserName">Zhou Maomao</Descriptions.Item>
         <Descriptions.Item label="Telephone">1810000000</Descriptions.Item>
         <Descriptions.Item label="Live">Hangzhou, Zhejiang</Descriptions.Item>
