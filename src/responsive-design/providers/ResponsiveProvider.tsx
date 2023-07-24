@@ -63,6 +63,20 @@ export interface ResponsiveProviderProps extends Omit<ResponsiveContextType, 'de
   device?: DeviceName
 }
 
+const getDeviceName = () => {
+  const width = window.innerWidth
+
+  if (width > DESKTOP_DEVICE.breakpoint) {
+    return DESKTOP_DEVICE.name
+  } else if (width > TABLET_DEVICE.breakpoint) {
+    return TABLET_DEVICE.name
+  } else if (width > PHONE_DEVICE.breakpoint) {
+    return PHONE_DEVICE.name
+  }
+
+  return DESKTOP_DEVICE.name
+}
+
 /**
  * @example
  *  <ResponsiveProvider device='pc' config={{ ... }}>
@@ -75,27 +89,13 @@ export function ResponsiveProvider(props: React.PropsWithChildren<ResponsiveProv
     config, 
     children
   } = props
-  const [device, setDevice] = useState<DeviceName>(defaultDevice || DESKTOP_DEVICE.name);
+  const [device, setDevice] = useState<DeviceName>(defaultDevice || getDeviceName());
   
   useEffect(() => {
     if (defaultDevice) return
 
-    const calculate = () => {
-      const width = window.innerWidth
-
-      if (width > DESKTOP_DEVICE.breakpoint) {
-        setDevice(DESKTOP_DEVICE.name)
-      } else if (width > TABLET_DEVICE.breakpoint) {
-        setDevice(TABLET_DEVICE.name)
-      } else if (width > PHONE_DEVICE.breakpoint) {
-        setDevice(PHONE_DEVICE.name)
-      }
-    }
-
-    calculate()
-
     const handleResize = () => {
-      calculate()
+      setDevice(getDeviceName())
     }
     window.addEventListener('resize', handleResize)
     return () => {
